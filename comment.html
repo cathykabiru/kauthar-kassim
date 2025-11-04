@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anonymous Comments | Voice for Justice</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="assets/images/logo.png (1).png" alt="Logo" class="logo-large" />
+      <div class="brand-texts">
+        <div class="site-title">Voice for Justice</div>
+        <div class="site-sub">Anonymous Comments</div>
+      </div>
+    </div>
+  </header>
+
+  <section class="card alt">
+    <h2>Leave Your Anonymous Comment</h2>
+    <form id="commentForm">
+      <textarea id="commentText" placeholder="Share your thoughts or story..." required></textarea>
+      <button type="submit" class="btn">Submit Comment</button>
+    </form>
+
+    <div id="thankyou" class="thankyou" style="display:none;">Thank you for sharing your voice 💙</div>
+
+    <div id="commentList"></div>
+  </section>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="year"></span> Voice for Justice</p>
+  </footer>
+
+  <script>
+    const form = document.getElementById('commentForm');
+    const text = document.getElementById('commentText');
+    const list = document.getElementById('commentList');
+    const thankyou = document.getElementById('thankyou');
+
+    // Load previous comments
+    const comments = JSON.parse(localStorage.getItem('comments') || '[]');
+    comments.forEach(c => addComment(c));
+
+    function addComment(msg) {
+      const div = document.createElement('div');
+      div.className = 'comment';
+      div.textContent = msg;
+      list.prepend(div);
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const msg = text.value.trim();
+      if (!msg) return;
+
+      addComment(msg);
+      comments.push(msg);
+      localStorage.setItem('comments', JSON.stringify(comments));
+      text.value = '';
+      thankyou.style.display = 'block';
+      setTimeout(() => thankyou.style.display = 'none', 3000);
+    });
+
+    document.getElementById('year').innerText = new Date().getFullYear();
+  </script>
+
+</body>
+</html>

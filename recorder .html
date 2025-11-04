@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Record Your Voice | Voice for Justice</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="assets/images/logo.png" alt="Logo" class="logo-large" />
+      <div class="brand-texts">
+        <div class="site-title">Voice for Justice</div>
+        <div class="site-sub">Voice Recording</div>
+      </div>
+    </div>
+  </header>
+
+  <section class="card alt">
+    <h2>Record Your Voice</h2>
+    <p>Speak your truth. Everything you record remains on your device — safe and private.</p>
+
+    <div id="recorder-container">
+      <button id="recordBtn" class="btn">🎤 Start Recording</button>
+      <div id="recordingStatus"></div>
+      <audio id="audioPlayback" controls style="display:none; margin-top:10px;"></audio>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="year"></span> Voice for Justice</p>
+  </footer>
+
+  <script>
+    const recordBtn = document.getElementById("recordBtn");
+    const statusEl = document.getElementById("recordingStatus");
+    const audioEl = document.getElementById("audioPlayback");
+    let mediaRecorder, chunks = [], recording = false;
+
+    recordBtn.addEventListener("click", async () => {
+      if (!recording) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          chunks = [];
+
+          mediaRecorder.ondataavailable = e => chunks.push(e.data);
+          mediaRecorder.onstop = () => {
+            const blob = new Blob(chunks, { type: "audio/ogg; codecs=opus" });
+            audioEl.src = URL.createObjectURL(blob);
+            audioEl.style.display = "block";
+          };
+
+          mediaRecorder.start();
+          recording = true;
+          recordBtn.textContent = "⏹ Stop Recording";
+          recordBtn.classList.add("recording-active");
+          statusEl.textContent = "Recording... Speak freely.";
+        } catch (err) {
+          alert("Microphone access denied or not supported.");
+        }
+      } else {
+        mediaRecorder.stop();
+        recording = false;
+        recordBtn.textContent = "🎤 Start Recording";
+        recordBtn.classList.remove("recording-active");
+        statusEl.textContent = "Recording stopped. Listen below:";
+      }
+    });
+
+    document.getElementById('year').innerText = new Date().getFullYear();
+  </script>
+
+</body>
+</html>
